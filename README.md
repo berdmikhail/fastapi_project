@@ -45,7 +45,11 @@ docker run -d --name shorturl_service -p 8001:80 -v shorturl_data:/app/data berd
 docker build -t berdmikhail/todo-service:latest todo_app/
 docker build -t berdmikhail/shorturl-service:latest ShortURL/
 ```
-
+### 4. Удаление контейнеров и/или именованных томов
+```bash
+docker rm -f todo_service shorturl_service
+docker volume rm todo_data shorturl_data
+```
 ---
 
 ## Локальный запуск (без Docker)
