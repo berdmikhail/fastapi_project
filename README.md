@@ -45,10 +45,68 @@ docker run -d --name shorturl_service -p 8001:80 -v shorturl_data:/app/data berd
 docker build -t berdmikhail/todo-service:latest todo_app/
 docker build -t berdmikhail/shorturl-service:latest ShortURL/
 ```
-### 4. Удаление контейнеров и/или именованных томов
+
+### 4. Проверка статуса и просмотр логов
+
+Проверить, что оба контейнера запущены и работают:
+```bash
+docker ps
+```
+
+Посмотреть логи сервисов (удобно для отладки запросов и проверки инициализации SQLite):
+```bash
+docker logs todo_service
+docker logs shorturl_service
+```
+
+Просмотр логов в реальном времени (выход по `Ctrl+C`):
+```bash
+docker logs -f todo_service
+```
+
+### 5. Перезапуск и проверка сохранения данных
+
+Перезапустить контейнеры без потери данных в SQLite:
+```bash
+docker restart todo_service shorturl_service
+```
+
+Проверить список подключённых именованных томов и их расположение:
+```bash
+docker volume ls
+docker volume inspect todo_data shorturl_data
+```
+
+### 6. Обновление образов из Docker Hub
+
+Если на Docker Hub загружена новая версия образов, скачайте её и пересоздайте контейнеры (данные в томах сохранятся):
+```bash
+docker pull berdmikhail/todo-service:latest
+docker pull berdmikhail/shorturl-service:latest
+
+docker rm -f todo_service shorturl_service
+
+docker run -d --name todo_service -p 8000:80 -v todo_data:/app/data berdmikhail/todo-service:latest
+docker run -d --name shorturl_service -p 8001:80 -v shorturl_data:/app/data berdmikhail/shorturl-service:latest
+```
+
+### 7. Остановка и очистка окружения
+
+Временно остановить контейнеры (их можно снова запустить через `docker start todo_service shorturl_service`):
+```bash
+docker stop todo_service shorturl_service
+```
+
+Остановить и удалить контейнеры (базы данных в томах останутся):
+```bash
+docker rm -f todo_service shorturl_service
+```
+
+Полная очистка вместе с базами данных и локальными образами:
 ```bash
 docker rm -f todo_service shorturl_service
 docker volume rm todo_data shorturl_data
+docker rmi berdmikhail/todo-service:latest berdmikhail/shorturl-service:latest
 ```
 ---
 
